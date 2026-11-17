@@ -1,0 +1,11 @@
+node_modules
+.next
+out
+.vercel
+*.log
+.env
+.env.local
+public/uploads/*
+!public/uploads/.gitkeep
+
+.tmp/

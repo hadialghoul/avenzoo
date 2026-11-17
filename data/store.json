@@ -1,0 +1,206 @@
+{
+  "orderSeq": 1026,
+  "categories": [
+    {
+      "id": "cat_shirts",
+      "name": "Shirts",
+      "slug": "shirts",
+      "description": "Stripes and dress shirts.",
+      "image": "/images/p-shirt.jpg"
+    },
+    {
+      "id": "cat_trousers",
+      "name": "Trousers",
+      "slug": "trousers",
+      "description": "Chinos and clean everyday legs.",
+      "image": "/images/cat-trousers.jpg"
+    },
+    {
+      "id": "cat_outerwear",
+      "name": "Outerwearrr",
+      "slug": "outerwearrr",
+      "description": "Jackets in leather and camel.",
+      "image": "/images/p-walk.jpg"
+    },
+    {
+      "id": "cat_accessories",
+      "name": "Accessories",
+      "slug": "accessories",
+      "description": "The belt that finishes the look.",
+      "image": "/images/p-belt.jpg"
+    }
+  ],
+  "products": [
+    {
+      "id": "prod_leather",
+      "name": "Cognac Leather Jacket",
+      "slug": "cognac-leather-jacket",
+      "categoryId": "cat_outerwear",
+      "price": 390,
+      "description": "A cognac leather jacket with a stand collar and a quilted shoulder. Close it over a black crew, or leave it open over a shirt.",
+      "details": "Leather · Stand collar · Zip front · Wipe clean",
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "colors": [
+        "Cognac"
+      ],
+      "images": [
+        "/images/cat-accessories.jpg"
+      ],
+      "featured": true,
+      "inStock": true,
+      "createdAt": "2026-10-06T09:00:00.000Z"
+    },
+    {
+      "id": "prod_camel",
+      "name": "Camel Club Jacket",
+      "slug": "camel-club-jacket",
+      "categoryId": "cat_outerwear",
+      "price": 260,
+      "description": "A camel jacket with a shirt collar and a straight hem. Worn here over a navy shirt, with the collar sitting clean on the shoulder.",
+      "details": "Suede touch · Shirt collar · Button front · Dry clean",
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "colors": [
+        "Camel"
+      ],
+      "images": [
+        "/images/p-walk.jpg"
+      ],
+      "featured": true,
+      "inStock": true,
+      "createdAt": "2026-10-08T09:00:00.000Z"
+    },
+    {
+      "id": "prod_stripe",
+      "name": "Azure Stripe Shirt",
+      "slug": "azure-stripe-shirt",
+      "categoryId": "cat_shirts",
+      "price": 110,
+      "description": "A fine blue stripe shirt with a spread collar. Wear it open at the neck, or with a tie under the navy suit.",
+      "details": "Cotton · Spread collar · Regular fit · Wash cold",
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "Blue"
+      ],
+      "images": [
+        "/images/p-shirt.jpg"
+      ],
+      "featured": true,
+      "inStock": true,
+      "createdAt": "2026-10-10T09:00:00.000Z"
+    },
+    {
+      "id": "prod_chino",
+      "name": "Stone Chino",
+      "slug": "stone-chino",
+      "categoryId": "cat_trousers",
+      "price": 120,
+      "description": "A tapered stone chino with a clean front and a turned hem. The trouser for the weekend and for the office that allows it.",
+      "details": "Cotton twill · Tapered leg · Belt loops · Wash cold",
+      "sizes": [
+        "30",
+        "32",
+        "34",
+        "36",
+        "38"
+      ],
+      "colors": [
+        "Stone"
+      ],
+      "images": [
+        "/images/cat-trousers.jpg"
+      ],
+      "featured": true,
+      "inStock": true,
+      "createdAt": "2026-10-12T09:00:00.000Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": "ord_1026",
+      "number": "AV-1026",
+      "customerName": "Karim Haddad",
+      "phone": "+961 70 111 222",
+      "city": "Beirut",
+      "address": "Achrafieh, Abdel Wahab Street, Building 12, 3rd floor",
+      "items": [
+        {
+          "productId": "prod_windowpane",
+          "productName": "Indigo Windowpane Suit",
+          "size": "50",
+          "color": "Indigo",
+          "quantity": 1,
+          "price": 540
+        }
+      ],
+      "status": "confirmed",
+      "notes": "Sample order. Call before the evening delivery.",
+      "total": 540,
+      "createdAt": "2026-11-08T14:30:00.000Z"
+    },
+    {
+      "id": "ord_1025",
+      "number": "AV-1025",
+      "customerName": "Rami Nassar",
+      "phone": "+961 71 333 444",
+      "city": "Tripoli",
+      "address": "Azmi Street, near the clock tower",
+      "items": [
+        {
+          "productId": "prod_chino",
+          "productName": "Stone Chino",
+          "size": "32",
+          "color": "Stone",
+          "quantity": 1,
+          "price": 120
+        }
+      ],
+      "status": "out_for_delivery",
+      "notes": "Sample order. Leave with the building guard if there is no answer.",
+      "total": 120,
+      "createdAt": "2026-11-06T11:00:00.000Z"
+    },
+    {
+      "id": "ord_1024",
+      "number": "AV-1024",
+      "customerName": "Jad Khoury",
+      "phone": "+961 76 555 666",
+      "city": "Zahle",
+      "address": "Brazil Street, House 8",
+      "items": [
+        {
+          "productId": "prod_stripe",
+          "productName": "Azure Stripe Shirt",
+          "size": "L",
+          "color": "Blue",
+          "quantity": 1,
+          "price": 110
+        }
+      ],
+      "status": "delivered",
+      "notes": "Sample order.",
+      "total": 110,
+      "createdAt": "2026-11-01T16:10:00.000Z"
+    }
+  ],
+  "offers": [],
+  "nav": {
+    "newArrival": true,
+    "trending": true
+  }
+}

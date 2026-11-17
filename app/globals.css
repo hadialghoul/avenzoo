@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #070707;
+  color: #f4efe4;
+}
+
+::selection {
+  background: #9c4221;
+  color: #f3eee6;
+}
+
+:focus-visible {
+  outline: 1px solid #d4bc86;
+  outline-offset: 3px;
+}
+
+input[type="checkbox"] {
+  accent-color: #c6a15b;
+}
+
+select.field option {
+  background: #070707;
+}
+
+@layer components {
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2 bg-gold-deep px-7 py-3.5 text-center text-[11px] font-medium uppercase tracking-[0.22em] text-[#140f09] transition duration-300 hover:bg-gold;
+  }
+
+  .btn-line {
+    @apply inline-flex items-center justify-center gap-2 border border-gold/50 px-7 py-3.5 text-center text-[11px] font-medium uppercase tracking-[0.22em] text-gold transition duration-300 hover:border-gold hover:bg-gold/10;
+  }
+
+  .btn-gold:disabled,
+  .btn-line:disabled {
+    cursor: wait;
+    opacity: 0.55;
+  }
+
+  .field {
+    @apply w-full border border-white/15 bg-transparent px-3 py-3 text-sm text-ivory outline-none transition placeholder:text-white/30 focus:border-gold;
+  }
+
+  .admin-table {
+    @apply w-full min-w-[680px] text-left text-sm;
+  }
+
+  .admin-table th {
+    @apply border-b border-gold/30 px-3 py-3 text-[11px] font-medium uppercase tracking-[0.16em] text-gold;
+  }
+
+  .admin-table td {
+    @apply border-b border-white/10 px-3 py-3 align-middle;
+  }
+
+  .outline-gold {
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(212, 188, 134, 0.4);
+  }
+
+  .shop-shell {
+    color-scheme: light;
+    background-color: #ffffff;
+    color: #171717;
+  }
+
+  .shop-shell ::selection {
+    background: #111111;
+    color: #ffffff;
+  }
+
+  .shop-shell :focus-visible {
+    outline: 2px solid #111111;
+    outline-offset: 3px;
+  }
+
+  .btn-ink {
+    @apply inline-flex items-center justify-center gap-2 bg-brand-black px-6 py-3.5 text-center text-[12px] font-semibold uppercase tracking-[0.16em] text-white transition duration-200 hover:bg-brand-charcoal disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-brand-black;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 border border-brand-black px-6 py-3.5 text-center text-[12px] font-semibold uppercase tracking-[0.16em] text-brand-black transition duration-200 hover:bg-brand-black hover:text-white;
+  }
+
+  .btn-light {
+    @apply inline-flex items-center justify-center gap-2 bg-white px-6 py-3.5 text-center text-[12px] font-semibold uppercase tracking-[0.16em] text-brand-black transition duration-200 hover:bg-brand-mist;
+  }
+
+  .btn-light-line {
+    @apply inline-flex items-center justify-center gap-2 border border-white/50 px-6 py-3.5 text-center text-[12px] font-semibold uppercase tracking-[0.16em] text-white transition duration-200 hover:bg-white hover:text-brand-black;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise {
+    animation: none !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}

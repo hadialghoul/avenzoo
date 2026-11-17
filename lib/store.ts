@@ -1,18 +1,17 @@
 import { randomUUID } from "crypto";
-import { promises as fs, readFileSync, existsSync } from "fs";
-import path from "path";
 import type { StoreData } from "./types";
 import initialStoreData from "../data/store.json";
 
 const STORE_KEY = "avenzo:store";
-const dataPath = path.join(process.cwd(), "data", "store.json");
 
-const useRedis = Boolean(process.env.UPSTASH_REDIS_REST_URL);
+function isRedisEnabled() {
+  return Boolean(process.env.UPSTASH_REDIS_REST_URL);
+}
 
 let redisClient: import("@upstash/redis").Redis | null = null;
 
 async function getRedis() {
-  if (!redisClient && useRedis) {
+  if (!redisClient && isRedisEnabled()) {
     const { Redis } = await import("@upstash/redis");
     redisClient = new Redis({
       url: process.env.UPSTASH_REDIS_REST_URL!,
@@ -33,28 +32,30 @@ function normalize(store: StoreData) {
 }
 
 function getInitialData(): StoreData {
-  if (useRedis) {
-    return normalize(initialStoreData as StoreData);
-  }
-  if (existsSync(dataPath)) {
-    const raw = readFileSync(dataPath, "utf8");
-    return normalize(JSON.parse(raw) as StoreData);
-  }
   return normalize(initialStoreData as StoreData);
+}
+
+async function getLocalStore(): Promise<{ fs: typeof import("fs/promises"); path: string }> {
+  const fs = await import("fs/promises");
+  const path = await import("path");
+  return { fs, path: path.join(process.cwd(), "data", "store.json") };
 }
 
 let queue: Promise<unknown> = Promise.resolve();
 
 export function readStore(): StoreData {
-  if (useRedis) {
+  if (isRedisEnabled()) {
     throw new Error("Use readStoreAsync() when Redis is enabled");
   }
-  const raw = readFileSync(dataPath, "utf8");
+  const fs = require("fs");
+  const path = require("path");
+  const dataPath = path.join(process.cwd(), "data", "store.json");
+  const raw = fs.readFileSync(dataPath, "utf8");
   return normalize(JSON.parse(raw) as StoreData);
 }
 
 export async function readStoreAsync(): Promise<StoreData> {
-  if (useRedis) {
+  if (isRedisEnabled()) {
     const redis = await getRedis();
     const data = await redis!.get<StoreData>(STORE_KEY);
     if (data) {
@@ -64,13 +65,14 @@ export async function readStoreAsync(): Promise<StoreData> {
     await redis!.set(STORE_KEY, initial);
     return initial;
   }
-  const raw = await fs.readFile(dataPath, "utf8");
+  const { fs, path } = await getLocalStore();
+  const raw = await fs.readFile(path, "utf8");
   return normalize(JSON.parse(raw) as StoreData);
 }
 
 export function updateStore<T>(mutator: (store: StoreData) => T): Promise<T> {
   const run = queue.then(async () => {
-    if (useRedis) {
+    if (isRedisEnabled()) {
       const redis = await getRedis();
       const data = await redis!.get<StoreData>(STORE_KEY);
       const store = data ? normalize(data) : getInitialData();
@@ -78,10 +80,11 @@ export function updateStore<T>(mutator: (store: StoreData) => T): Promise<T> {
       await redis!.set(STORE_KEY, store);
       return result;
     }
-    const raw = await fs.readFile(dataPath, "utf8");
+    const { fs, path } = await getLocalStore();
+    const raw = await fs.readFile(path, "utf8");
     const store = normalize(JSON.parse(raw) as StoreData);
     const result = mutator(store);
-    await fs.writeFile(dataPath, JSON.stringify(store, null, 2));
+    await fs.writeFile(path, JSON.stringify(store, null, 2));
     return result;
   });
   queue = run.then(
@@ -92,7 +95,7 @@ export function updateStore<T>(mutator: (store: StoreData) => T): Promise<T> {
 }
 
 export async function seedStore(): Promise<void> {
-  if (!useRedis) {
+  if (!isRedisEnabled()) {
     throw new Error("Seeding is only needed for Redis storage");
   }
   const redis = await getRedis();

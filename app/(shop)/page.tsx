@@ -5,7 +5,7 @@ import { ShopNowButton } from "@/components/ShopNowButton";
 import { brand, generalWhatsApp } from "@/lib/brand";
 import { byNewest, isNewArrival } from "@/lib/catalog";
 import { money } from "@/lib/format";
-import { categoryName, readStore } from "@/lib/store";
+import { categoryName, readStoreAsync } from "@/lib/store";
 import type { Product } from "@/lib/types";
 
 export const metadata: Metadata = {
@@ -14,8 +14,8 @@ export const metadata: Metadata = {
 
 const lookOrder = ["camel-club-jacket", "azure-stripe-shirt", "stone-chino"];
 
-export default function HomePage() {
-  const store = readStore();
+export default async function HomePage() {
+  const store = await readStoreAsync();
   const arrivals = store.products.filter((product) => isNewArrival(product)).sort(byNewest).slice(0, 8);
   const trending = store.products.filter((product) => product.featured);
   const offer = store.offers.find((item) => item.active);

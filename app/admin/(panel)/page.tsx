@@ -2,11 +2,11 @@ import Link from "next/link";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { getSession } from "@/lib/auth";
 import { formatDate, money } from "@/lib/format";
-import { readStore } from "@/lib/store";
+import { readStoreAsync } from "@/lib/store";
 
 export default async function DashboardPage() {
   const session = await getSession();
-  const store = readStore();
+  const store = await readStoreAsync();
   const openOrders = store.orders.filter((order) => order.status !== "delivered" && order.status !== "cancelled");
   const value = store.orders
     .filter((order) => order.status !== "cancelled")

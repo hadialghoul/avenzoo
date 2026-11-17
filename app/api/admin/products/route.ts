@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { createProduct } from "@/lib/actions";
 import { actionError, readBody, requireAdmin } from "@/lib/http";
-import { readStore } from "@/lib/store";
+import { readStoreAsync } from "@/lib/store";
 
 export async function GET() {
   const guard = await requireAdmin();
   if (guard.error) return guard.error;
-  const store = readStore();
+  const store = await readStoreAsync();
   return NextResponse.json({ products: store.products, categories: store.categories });
 }
 

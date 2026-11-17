@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 import { promises as fs, readFileSync, existsSync } from "fs";
 import path from "path";
 import type { StoreData } from "./types";
+import initialStoreData from "../data/store.json";
 
 const STORE_KEY = "avenzo:store";
 const dataPath = path.join(process.cwd(), "data", "store.json");
@@ -32,18 +33,14 @@ function normalize(store: StoreData) {
 }
 
 function getInitialData(): StoreData {
+  if (useRedis) {
+    return normalize(initialStoreData as StoreData);
+  }
   if (existsSync(dataPath)) {
     const raw = readFileSync(dataPath, "utf8");
     return normalize(JSON.parse(raw) as StoreData);
   }
-  return {
-    orderSeq: 1000,
-    categories: [],
-    products: [],
-    orders: [],
-    offers: [],
-    nav: { newArrival: true, trending: true },
-  };
+  return normalize(initialStoreData as StoreData);
 }
 
 let queue: Promise<unknown> = Promise.resolve();

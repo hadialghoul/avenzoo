@@ -19,6 +19,10 @@ function useVercelBlob() {
   return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 }
 
+function isVercelProduction() {
+  return Boolean(process.env.VERCEL);
+}
+
 async function uploadToBlob(file: File, filename: string): Promise<string> {
   const { put } = await import("@vercel/blob");
   const blob = await put(filename, file, { access: "public" });
@@ -38,6 +42,13 @@ export async function POST(request: Request) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Please sign in again." }, { status: 401 });
 
+  if (isVercelProduction() && !useVercelBlob()) {
+    return NextResponse.json(
+      { error: "Image uploads are not configured. Please add BLOB_READ_WRITE_TOKEN to your Vercel environment variables." },
+      { status: 500 }
+    );
+  }
+
   const form = await request.formData();
   const files = form.getAll("files").filter((item): item is File => item instanceof File && item.size > 0);
   if (!files.length) return NextResponse.json({ error: "Choose an image to upload." }, { status: 400 });
@@ -45,21 +56,33 @@ export async function POST(request: Request) {
 
   const urls: string[] = [];
 
-  for (const file of files) {
-    const extension = extensionFor(file);
-    if (!extension) {
-      return NextResponse.json({ error: "Use a JPG, PNG, or WebP image." }, { status: 400 });
+  try {
+    for (const file of files) {
+      const extension = extensionFor(file);
+      if (!extension) {
+        return NextResponse.json({ error: "Use a JPG, PNG, or WebP image." }, { status: 400 });
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        return NextResponse.json({ error: "Each image must be under 5 MB." }, { status: 400 });
+      }
+      const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${extension}`;
+
+      if (useVercelBlob()) {
+        urls.push(await uploadToBlob(file, filename));
+      } else {
+        urls.push(await uploadToLocal(file, filename));
+      }
     }
-    if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: "Each image must be under 5 MB." }, { status: 400 });
+  } catch (error) {
+    console.error("Upload error:", error);
+    const message = error instanceof Error ? error.message : "Upload failed";
+    if (message.includes("ENOENT") || message.includes("EROFS") || message.includes("read-only")) {
+      return NextResponse.json(
+        { error: "Image uploads are not configured. Please add BLOB_READ_WRITE_TOKEN to your Vercel environment variables." },
+        { status: 500 }
+      );
     }
-    const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${extension}`;
-    
-    if (useVercelBlob()) {
-      urls.push(await uploadToBlob(file, filename));
-    } else {
-      urls.push(await uploadToLocal(file, filename));
-    }
+    return NextResponse.json({ error: "Failed to upload image. Please try again." }, { status: 500 });
   }
 
   return NextResponse.json({ urls });

@@ -7,7 +7,7 @@ import { Pagination } from "@/components/shop/Pagination";
 import { SortSelect } from "@/components/shop/SortSelect";
 import { byNewest, isNewArrival, uniqueLabels } from "@/lib/catalog";
 import { shopHref, type ShopQuery } from "@/lib/shop-query";
-import { categoryName, readStore } from "@/lib/store";
+import { categoryName, readStoreAsync } from "@/lib/store";
 import type { Product } from "@/lib/types";
 
 export const metadata: Metadata = {
@@ -47,7 +47,7 @@ export default async function ShopPage({
     page: one(params.page),
     collection: one(params.collection) === "trending" ? "trending" : one(params.collection) === "new" ? "new" : "",
   };
-  const store = readStore();
+  const store = await readStoreAsync();
   const active = store.categories.find((category) => category.slug === query.category);
   const needle = (query.q || "").toLowerCase();
   const sort = query.sort === "price-asc" || query.sort === "price-desc" || query.sort === "name" ? query.sort : "newest";

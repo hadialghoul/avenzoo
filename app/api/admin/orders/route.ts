@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { createOrder } from "@/lib/actions";
 import { actionError, readBody, requireAdmin } from "@/lib/http";
-import { readStore } from "@/lib/store";
+import { readStoreAsync } from "@/lib/store";
 
 export async function GET() {
   const guard = await requireAdmin();
   if (guard.error) return guard.error;
-  const store = readStore();
+  const store = await readStoreAsync();
   const orders = [...store.orders].sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
   return NextResponse.json({ orders, products: store.products });
 }

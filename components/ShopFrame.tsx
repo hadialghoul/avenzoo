@@ -1,9 +1,9 @@
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
-import { readStore } from "@/lib/store";
+import { readStoreAsync } from "@/lib/store";
 
-export function ShopFrame({ children }: { children: React.ReactNode }) {
-  const store = readStore();
+export async function ShopFrame({ children }: { children: React.ReactNode }) {
+  const store = await readStoreAsync();
   const categories = store.categories.map((category) => ({ name: category.name, slug: category.slug }));
   const offers = store.offers.filter((offer) => offer.active).map((offer) => ({ id: offer.id, title: offer.title }));
 

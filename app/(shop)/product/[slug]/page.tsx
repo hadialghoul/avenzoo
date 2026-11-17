@@ -6,13 +6,14 @@ import { Gallery } from "@/components/Gallery";
 import { ProductCard } from "@/components/ProductCard";
 import { ShopNow } from "@/components/ShopNow";
 import { money } from "@/lib/format";
-import { categoryName, readStore } from "@/lib/store";
+import { categoryName, readStoreAsync } from "@/lib/store";
 
 type Context = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Context): Promise<Metadata> {
   const { slug } = await params;
-  const product = readStore().products.find((item) => item.slug === slug);
+  const store = await readStoreAsync();
+  const product = store.products.find((item) => item.slug === slug);
   if (!product) return { title: "Piece" };
   return {
     title: product.name,
@@ -27,7 +28,7 @@ export async function generateMetadata({ params }: Context): Promise<Metadata> {
 
 export default async function ProductPage({ params }: Context) {
   const { slug } = await params;
-  const store = readStore();
+  const store = await readStoreAsync();
   const product = store.products.find((item) => item.slug === slug);
   if (!product) notFound();
   const category = store.categories.find((item) => item.id === product.categoryId);

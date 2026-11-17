@@ -1,5 +1,3 @@
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 
@@ -17,6 +15,25 @@ function extensionFor(file: File) {
   return match[1] === "jpeg" ? "jpg" : match[1];
 }
 
+function useVercelBlob() {
+  return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+}
+
+async function uploadToBlob(file: File, filename: string): Promise<string> {
+  const { put } = await import("@vercel/blob");
+  const blob = await put(filename, file, { access: "public" });
+  return blob.url;
+}
+
+async function uploadToLocal(file: File, filename: string): Promise<string> {
+  const { mkdir, writeFile } = await import("fs/promises");
+  const path = await import("path");
+  const directory = path.join(process.cwd(), "public", "uploads");
+  await mkdir(directory, { recursive: true });
+  await writeFile(path.join(directory, filename), Buffer.from(await file.arrayBuffer()));
+  return `/uploads/${filename}`;
+}
+
 export async function POST(request: Request) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Please sign in again." }, { status: 401 });
@@ -26,8 +43,6 @@ export async function POST(request: Request) {
   if (!files.length) return NextResponse.json({ error: "Choose an image to upload." }, { status: 400 });
   if (files.length > 6) return NextResponse.json({ error: "Upload up to 6 images at a time." }, { status: 400 });
 
-  const directory = path.join(process.cwd(), "public", "uploads");
-  await mkdir(directory, { recursive: true });
   const urls: string[] = [];
 
   for (const file of files) {
@@ -39,8 +54,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Each image must be under 5 MB." }, { status: 400 });
     }
     const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${extension}`;
-    await writeFile(path.join(directory, filename), Buffer.from(await file.arrayBuffer()));
-    urls.push(`/uploads/${filename}`);
+    
+    if (useVercelBlob()) {
+      urls.push(await uploadToBlob(file, filename));
+    } else {
+      urls.push(await uploadToLocal(file, filename));
+    }
   }
 
   return NextResponse.json({ urls });

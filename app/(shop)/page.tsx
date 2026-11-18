@@ -32,7 +32,7 @@ export default async function HomePage() {
             <img
               src="/images/avenzo-storefront.jpg"
               alt="Avenzo shopfront in Tyre"
-              className="absolute inset-0 h-full w-full object-cover object-[center_30%]"
+              className="absolute inset-0 h-full w-full object-cover object-top lg:object-[center_30%]"
             />
             <p className="absolute bottom-4 left-4 text-[11px] font-semibold uppercase tracking-[0.28em] text-white">The shop · Tyre</p>
           </div>

@@ -19,6 +19,10 @@ function useVercelBlob() {
   return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 }
 
+function isVercelProduction() {
+  return process.env.VERCEL === "1";
+}
+
 async function uploadToBlob(file: File, filename: string): Promise<string> {
   const { put } = await import("@vercel/blob");
   const blob = await put(filename, file, { access: "public" });
@@ -43,6 +47,13 @@ export async function POST(request: Request) {
   if (!files.length) return NextResponse.json({ error: "Choose an image to upload." }, { status: 400 });
   if (files.length > 6) return NextResponse.json({ error: "Upload up to 6 images at a time." }, { status: 400 });
 
+  if (!useVercelBlob() && isVercelProduction()) {
+    return NextResponse.json(
+      { error: "Image uploads are not configured. Please add BLOB_READ_WRITE_TOKEN to your Vercel environment variables." },
+      { status: 503 }
+    );
+  }
+
   const urls: string[] = [];
 
   for (const file of files) {
@@ -54,11 +65,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Each image must be under 5 MB." }, { status: 400 });
     }
     const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${extension}`;
-    
-    if (useVercelBlob()) {
-      urls.push(await uploadToBlob(file, filename));
-    } else {
-      urls.push(await uploadToLocal(file, filename));
+
+    try {
+      if (useVercelBlob()) {
+        urls.push(await uploadToBlob(file, filename));
+      } else {
+        urls.push(await uploadToLocal(file, filename));
+      }
+    } catch (err) {
+      console.error("Upload failed:", err);
+      const message = err instanceof Error ? err.message : "Unknown error";
+      return NextResponse.json(
+        { error: `Failed to upload image: ${message}` },
+        { status: 500 }
+      );
     }
   }
 

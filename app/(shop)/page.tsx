@@ -30,7 +30,7 @@ export default async function HomePage() {
         <div className="grid lg:min-h-[calc(100svh-6.4rem)] lg:grid-cols-12">
           <div className="relative min-h-[72vw] lg:col-span-7 lg:min-h-0">
             <img
-              src="/images/Avenzo-photo.JPG"
+              src="/images/avenzo-storefront.jpg"
               alt="Avenzo shopfront in Tyre"
               className="absolute inset-0 h-full w-full object-cover object-[center_30%]"
             />

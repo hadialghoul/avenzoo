@@ -1,6 +1,6 @@
-import { cleanImages, cleanList, cleanText, isOrderStatus, slugify } from "./format";
+import { cleanImages, cleanList, cleanText, slugify } from "./format";
 import { uid, updateStore } from "./store";
-import type { Category, NavSettings, Offer, Order, Product } from "./types";
+import type { Category, NavSettings, Offer, Product } from "./types";
 
 function uniqueSlug(items: { id: string; slug: string }[], name: string, selfId?: string) {
   const base = slugify(name);
@@ -128,91 +128,6 @@ export function deleteCategory(id: string) {
   });
 }
 
-function orderInput(body: Record<string, unknown>, products: Product[], previousPrice?: number) {
-  const customerName = cleanText(body.customerName, 80);
-  const phone = cleanText(body.phone, 40);
-  const city = cleanText(body.city, 40);
-  const address = cleanText(body.address, 240);
-  const productId = cleanText(body.productId, 80);
-  const quantity = Math.round(Number(body.quantity));
-  const status = cleanText(body.status, 40);
-  const product = products.find((item) => item.id === productId);
-  if (!customerName) throw new Error("Add the customer name.");
-  if (!phone) throw new Error("Add a phone number.");
-  if (!city) throw new Error("Choose a city.");
-  if (!address) throw new Error("Add the delivery address.");
-  if (!product) throw new Error("Choose a piece from the collection.");
-  if (!Number.isFinite(quantity) || quantity < 1 || quantity > 20) {
-    throw new Error("Quantity must be between 1 and 20.");
-  }
-  if (!isOrderStatus(status)) throw new Error("Choose an order status.");
-  const price = previousPrice ?? product.price;
-  return {
-    customerName,
-    phone,
-    city,
-    address,
-    notes: cleanText(body.notes, 800),
-    status,
-    items: [
-      {
-        productId: product.id,
-        productName: product.name,
-        size: cleanText(body.size, 24),
-        color: cleanText(body.color, 24),
-        quantity,
-        price,
-      },
-    ],
-    total: Math.round(price * quantity * 100) / 100,
-  };
-}
-
-export function createOrder(body: Record<string, unknown>) {
-  return updateStore((store) => {
-    const input = orderInput(body, store.products);
-    store.orderSeq += 1;
-    const order: Order = {
-      id: uid(),
-      number: `AV-${store.orderSeq}`,
-      customerName: input.customerName,
-      phone: input.phone,
-      city: input.city,
-      address: input.address,
-      notes: input.notes,
-      status: input.status,
-      items: input.items,
-      total: input.total,
-      createdAt: new Date().toISOString(),
-    };
-    store.orders.unshift(order);
-    return order;
-  });
-}
-
-export function updateOrder(id: string, body: Record<string, unknown>) {
-  return updateStore((store) => {
-    const index = store.orders.findIndex((item) => item.id === id);
-    if (index < 0) throw new Error("That order no longer exists.");
-    const current = store.orders[index];
-    const samePiece = current.items[0]?.productId === cleanText(body.productId, 80);
-    const input = orderInput(body, store.products, samePiece ? current.items[0]?.price : undefined);
-    const order: Order = {
-      ...current,
-      customerName: input.customerName,
-      phone: input.phone,
-      city: input.city,
-      address: input.address,
-      notes: input.notes,
-      status: input.status,
-      items: input.items,
-      total: input.total,
-    };
-    store.orders[index] = order;
-    return order;
-  });
-}
-
 function offerInput(body: Record<string, unknown>) {
   const title = cleanText(body.title, 80);
   const description = cleanText(body.description, 500);
@@ -267,15 +182,6 @@ export function deleteOffer(id: string) {
     const before = store.offers.length;
     store.offers = store.offers.filter((item) => item.id !== id);
     if (store.offers.length === before) throw new Error("That offer no longer exists.");
-    return { ok: true };
-  });
-}
-
-export function deleteOrder(id: string) {
-  return updateStore((store) => {
-    const before = store.orders.length;
-    store.orders = store.orders.filter((item) => item.id !== id);
-    if (store.orders.length === before) throw new Error("That order no longer exists.");
     return { ok: true };
   });
 }

@@ -9,7 +9,6 @@ const links = [
   { href: "/admin/categories", label: "Categories" },
   { href: "/admin/nav", label: "Navbar" },
   { href: "/admin/offers", label: "Offers" },
-  { href: "/admin/orders", label: "Orders" },
 ];
 
 export function Sidebar() {

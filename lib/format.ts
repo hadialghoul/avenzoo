@@ -1,5 +1,3 @@
-import type { OrderStatus } from "./types";
-
 export function money(value: number) {
   const cents = Math.round(value * 100) % 100;
   return new Intl.NumberFormat("en-US", {
@@ -64,21 +62,4 @@ export function cleanImages(value: unknown) {
         item.startsWith("https://"),
     )
     .slice(0, 6);
-}
-
-export const orderStatuses: { id: OrderStatus; label: string }[] = [
-  { id: "new", label: "New" },
-  { id: "confirmed", label: "Confirmed" },
-  { id: "preparing", label: "Preparing" },
-  { id: "out_for_delivery", label: "Out for delivery" },
-  { id: "delivered", label: "Delivered" },
-  { id: "cancelled", label: "Cancelled" },
-];
-
-export function statusLabel(id: string) {
-  return orderStatuses.find((status) => status.id === id)?.label ?? id;
-}
-
-export function isOrderStatus(value: string): value is OrderStatus {
-  return orderStatuses.some((status) => status.id === value);
 }

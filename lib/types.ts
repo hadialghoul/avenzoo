@@ -28,37 +28,6 @@ export type NavSettings = {
   trending: boolean;
 };
 
-export type OrderItem = {
-  productId: string;
-  productName: string;
-  size: string;
-  color: string;
-  quantity: number;
-  price: number;
-};
-
-export type OrderStatus =
-  | "new"
-  | "confirmed"
-  | "preparing"
-  | "out_for_delivery"
-  | "delivered"
-  | "cancelled";
-
-export type Order = {
-  id: string;
-  number: string;
-  customerName: string;
-  phone: string;
-  city: string;
-  address: string;
-  items: OrderItem[];
-  status: OrderStatus;
-  notes: string;
-  total: number;
-  createdAt: string;
-};
-
 export type Offer = {
   id: string;
   title: string;
@@ -68,10 +37,8 @@ export type Offer = {
 };
 
 export type StoreData = {
-  orderSeq: number;
   categories: Category[];
   products: Product[];
-  orders: Order[];
   offers: Offer[];
   nav: NavSettings;
 };
